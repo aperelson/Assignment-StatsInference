@@ -1,0 +1,52 @@
+---
+title: 'Part 1: Simulation Exercise'
+author: "Andrew Perelson"
+date: "March 15, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Overview
+
+This project investigates the exponential distribution in R and compares it with the Central Limit Theorem. Lambda will be set to 0.2 for all of the simulations and the report investigates the distribution of averages of 40 exponentials for a thousand simulations.
+
+## Simulations
+
+Set the seed (for repeatability), lambda and exponentials:
+
+```{r}
+set.seed(2000)
+lambda <- 0.2
+exp <- 40
+```
+
+Run the required simulations with the above set variables
+
+```{r}
+sim <- NULL
+for (i in 1 : 1000) sim <- c(sim, mean(rexp(exp, lambda)))
+```
+
+### Determine the sample mean:
+
+```{r}
+sampleMean <- mean(sim)
+print(sprintf("The sample means converged to: %f", sampleMean))
+```
+
+### Determine the theoretical mean:
+
+```{r}
+theoreticalMean <- lambda^-1
+print(sprintf("The theoretical means converged to: %f", theoreticalMean))
+```
+
+### Comparison of the sample vs theoretical means:
+There is only a slight difference between the sample mean and the theoretical mean.
+
+```{r}
+abs(mean(sim)-lambda^-1)
+```
