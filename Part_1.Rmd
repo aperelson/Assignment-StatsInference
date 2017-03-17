@@ -15,38 +15,83 @@ This project investigates the exponential distribution in R and compares it with
 
 ## Simulations
 
-Set the seed (for repeatability), lambda and exponentials:
+## Comparing The Sample and Theoretical Means
+
+Set the seed (for repeatability), lambda and exponentials and load required 
+library:
 
 ```{r}
+library(ggplot2)
 set.seed(2000)
 lambda <- 0.2
 exp <- 40
+sim <- NULL
 ```
 
 Run the required simulations with the above set variables
 
 ```{r}
-sim <- NULL
 for (i in 1 : 1000) sim <- c(sim, mean(rexp(exp, lambda)))
 ```
 
-### Determine the sample mean:
+#### Determine the sample mean:
 
 ```{r}
 sampleMean <- mean(sim)
-print(sprintf("The sample means converged to: %f", sampleMean))
+print(sprintf("The sample mean converged to: %f", sampleMean))
 ```
 
-### Determine the theoretical mean:
+#### Determine the theoretical mean:
+The theoretical mean of an exponential distribution is lambda^-1.
 
 ```{r}
 theoreticalMean <- lambda^-1
-print(sprintf("The theoretical means converged to: %f", theoreticalMean))
+print(sprintf("The theoretical mean converged to: %f", theoreticalMean))
 ```
 
-### Comparison of the sample vs theoretical means:
+#### Comparison of the sample vs theoretical means:
 There is only a slight difference between the sample mean and the theoretical mean.
 
 ```{r}
-abs(mean(sim)-lambda^-1)
+abs(sampleMean-theoreticalMean)
 ```
+
+## Comparing The Sample and Theoretical Variance
+#### Determine the sample variance:
+
+```{r}
+sampleVariance <- var(sim)
+print(sprintf("The sample variance: %f", sampleVariance))
+```
+
+#### Determine the theoretical variance:
+The theoretical variance of an exponential distribution is (lambda * sqrt(n))^-2.
+
+```{r}
+theoreticalVariance <- (lambda * sqrt(exp))^-2
+print(sprintf("The theoretical variance: %f", theoreticalVariance))
+```
+
+#### Comparison of the sample vs theoretical variance:
+
+There is a slight difference between the simulation sample variance and the 
+exponential distribution theoretical variance:
+
+```{r}
+abs(sampleVariance-theoreticalVariance)
+```
+
+#### Showing that the distribution is approximately normal:
+This is a density histogram of the 1000 simulations. There is an overlay with a 
+normal distribution that has a mean of lambda^-1 and standard deviation of 
+(lambda*sqrt(n))^-1, the theoretical normal distribution for the simulations.
+
+```{r}
+ggplot(data.frame(y=sim), aes(x=y)) + 
+  geom_histogram(aes(y=..density..), binwidth=0.2, fill="wheat", color="black") +
+  stat_function(fun=dnorm, args=list(mean=lambda^-1, sd=(lambda*sqrt(exp))^-1)) +
+  labs(title="Distribution compared to normal", x="Mean", y="Density")
+```
+
+
+
