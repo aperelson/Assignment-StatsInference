@@ -104,7 +104,7 @@ abs(sampleVariance-theoreticalVariance)
   hist(sim$Mean, 
         breaks = 100, 
         prob = TRUE, 
-        main = "Exponential Distribution n = 1000", 
+        main = "Variance Over Exponential Distribution (n = 1000)", 
         xlab = "Spread")
         xfit <- seq(min(sim$Mean), max(sim$Mean), length = 100)
         yfit <- dnorm(xfit, mean = 1/lambda, sd = (1/lambda/sqrt(40)))
