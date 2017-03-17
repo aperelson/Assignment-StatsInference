@@ -2,7 +2,9 @@
 title: 'Part 1: Simulation Exercise'
 author: "Andrew Perelson"
 date: "March 15, 2017"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -25,19 +27,20 @@ library(ggplot2)
 set.seed(2000)
 lambda <- 0.2
 exp <- 40
-sim <- NULL
+sim <- data.frame(Mean=numeric(0))
 ```
 
 Run the required simulations with the above set variables
 
 ```{r}
-for (i in 1 : 1000) sim <- c(sim, mean(rexp(exp, lambda)))
+for (i in 1:1000) { sim <- rbind(sim, mean(rexp(exp, lambda))) }
+names(sim) <- "Mean"
 ```
 
 #### Determine the sample mean:
 
 ```{r}
-sampleMean <- mean(sim)
+sampleMean <- mean(sim$Mean)
 print(sprintf("The sample mean converged to: %f", sampleMean))
 ```
 
@@ -56,11 +59,26 @@ There is only a slight difference between the sample mean and the theoretical me
 abs(sampleMean-theoreticalMean)
 ```
 
+#### Diagram plot indicating mean distribution with sample and theoretical means:
+
+```{r}
+hist(sim$Mean, 
+     breaks = 100, 
+     prob = TRUE, 
+     main="Exponential Distribution n = 1000", 
+     xlab="Spread")
+     abline(v = sampleMean,col="red",lwd = 2)
+     abline(v = theoreticalMean,col="green",lwd = 2)
+
+     legend('topright', c("Sample Mean", "Theoretical Mean"), 
+            bty = "n", lty = c(1,1), col = c(col = "red", col = "green"))
+```
+                
 ## Comparing The Sample and Theoretical Variance
 #### Determine the sample variance:
 
 ```{r}
-sampleVariance <- var(sim)
+sampleVariance <- var(sim$Mean)
 print(sprintf("The sample variance: %f", sampleVariance))
 ```
 
@@ -81,13 +99,27 @@ exponential distribution theoretical variance:
 abs(sampleVariance-theoreticalVariance)
 ```
 
+#### Diagram plot indicating variance compared to theoretical variance:
+```{r}
+  hist(sim$Mean, 
+        breaks = 100, 
+        prob = TRUE, 
+        main = "Exponential Distribution n = 1000", 
+        xlab = "Spread")
+        xfit <- seq(min(sim$Mean), max(sim$Mean), length = 100)
+        yfit <- dnorm(xfit, mean = 1/lambda, sd = (1/lambda/sqrt(40)))
+        lines(xfit, yfit, pch = 22, col = "green", lwd = 2)
+        legend('topright', c("Theoretical Variance"), 
+        lty = 1,lwd = 2, bty = "n", col = "green")
+```
+
 #### Showing that the distribution is approximately normal:
 This is a density histogram of the 1000 simulations. There is an overlay with a 
 normal distribution that has a mean of lambda^-1 and standard deviation of 
 (lambda*sqrt(n))^-1, the theoretical normal distribution for the simulations.
 
 ```{r}
-ggplot(data.frame(y=sim), aes(x=y)) + 
+ggplot(data.frame(y=sim$Mean), aes(x=y)) + 
   geom_histogram(aes(y=..density..), binwidth=0.2, fill="wheat", color="black") +
   stat_function(fun=dnorm, args=list(mean=lambda^-1, sd=(lambda*sqrt(exp))^-1)) +
   labs(title="Distribution compared to normal", x="Mean", y="Density")
